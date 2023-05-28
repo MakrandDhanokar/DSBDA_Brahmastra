@@ -1,0 +1,121 @@
+Create dataset
+
+1. CREATE DATABASE IF NOT EXISTS userdb;
+2. show databases;
+3. use userdb;
+
+CREATE TABLE IN HIVE
+
+1. CREATE TABLE IF NOT EXISTS employee2(eid int,name String,salary String,designation String)
+    ROW FORMAT DELIMITED
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    STORED AS TEXTFILE;
+
+2. load data local inpath '/home/cloudera/Documents/sample_emp.txt' overwrite into table employee2;
+
+DISPLAY DATA FROM TABLE
+
+1. select * from employee2;
+
+ALTER TABLE IN HIVE
+
+1. ALTER TABLE employee2 CHANGE salary salary Double;
+
+2. alter table employee2 add columns ( dept string comment'Department Name'); 
+
+DROP TABLE IN HIVE
+
+1. drop table employee;
+
+CREATE EXTERNAL TABLE IN HIVE
+
+>hdfs dfs -mkdir /HiveDirectory
+
+>hdfs dfs -put /home/cloudera/Downloads/sample_emp.txt /HiveDirectory
+
+hive> create external table emplist (Id int, Name string , Salary float)
+row format delimited
+ fields terminated by ',' 
+location '/HiveDirectory';
+
+select * from emplist;
+
+1. FLIGHT INFORMATION SYSTEM ANALYSIS USING HIVE
+
+CREATE TABLE flight_data(
+   year INT,
+   month INT,
+   day INT,
+   day_of_week INT,
+   dep_time INT,
+   crs_dep_time INT,
+   arr_time INT,
+   crs_arr_time INT,
+   unique_carrier STRING,
+   flight_num INT,
+   tail_num STRING,
+   actual_elapsed_time INT,
+   crs_elapsed_time INT,
+   air_time INT,
+   arr_delay INT,
+   dep_delay INT,
+   origin STRING,
+   dest STRING,
+   distance INT,
+   taxi_in INT,
+   taxi_out INT,
+   cancelled INT,
+   cancellation_code STRING,
+   diverted INT,
+   carrier_delay STRING,
+   weather_delay STRING,
+   nas_delay STRING,
+   security_delay STRING,
+   late_aircraft_delay STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+LOAD DATA LOCAL INPATH '/home/cloudera/2008.csv' OVERWRITE INTO TABLE flight_data;
+
+SHOW TABLES;
+SELECT
+   *
+FROM
+   flight_data
+LIMIT 10; 
+
+2. create the airports table
+
+CREATE TABLE airports(
+   name STRING,
+   country STRING,
+   area_code INT,
+   code STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+LOAD DATA LOCAL INPATH 'hive-impala-bdtc/airports.csv' OVERWRITE INTO TABLE airports;
+
+SELECT
+   *
+FROM
+   airports
+LIMIT 10
+
+3. JOIN TABLE
+
+SELECT
+   name,
+   AVG(arr_delay)
+FROM
+   flight_data f
+   INNER JOIN airports a
+   ON (f.origin=a.code)
+WHERE
+   month=1
+GROUP BY
+   name;
+
+select day,avg(dep_delay) from flight_data group by day;
